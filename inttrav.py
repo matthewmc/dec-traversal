@@ -21,6 +21,7 @@ def prioritize(obj):
             return results
         elif results == None:
             return []
+
     # Case 1
     res = []
     for key, item in attrs.items():
@@ -98,45 +99,43 @@ decorators below.
 def bfs(func):
     # Wrapper that initializes new objects(visited, res) to pass
     # depending on state.  
-    def stepper(queue, visited=set(), res=[], *args, **kwargs):
+    def stepper(queue, visited=set(), *args, **kwargs):
         # Catch if queue is a node-type vs a deque queue further in 
         # the stack.  
         if type(queue) != deque:
             queue = deque([queue])
         current = queue.popleft()
         curr_res = func(current, *args, **kwargs)
-        res.append(curr_res[1])
         # Try to extend queue with new neighbors checked against 
         # already visited.
         bfs_path(current, queue, visited)
         # To continue 1) Queue must have waiting nodes naturally
         #             2) Function must pass acknowledgement to cont.
-        if curr_res[0] == True and len(queue) > 0:
-            return stepper(queue, visited, res)
+        if curr_res == True and len(queue) > 0:
+            return stepper(queue, visited, *args, **kwargs)
         else:
-            return res
+            return None
     return stepper
 
 def dfs(func):
-    def stepper(queue, visited=set(), res=[], *args, **kwargs):
+    def stepper(queue, visited=set(), *args, **kwargs):
         if type(queue) != deque:
             queue = deque([queue])
         current = queue.popleft()
         curr_res = func(current, *args, **kwargs)
-        res.append(curr_res[1])
         dfs_path(current, queue, visited)
-        if curr_res[0] == True and len(queue) > 0:
-            return stepper(queue, visited, res)
+        if curr_res == True and len(queue) > 0:
+            return stepper(queue, visited, *args, **kwargs)
         else:
-            return res
+            return None
     return stepper
 
 # Decorator to catch when the function doesn't return an expected tuple.
 def invar(func):
     def wrapper(*args, **kwargs):
         results = func(*args, **kwargs)
-        if type(results) != tuple:
-            return (True, None)
+        if type(results) != bool:
+            return True
         else:
             return results
     return wrapper
@@ -145,9 +144,10 @@ def invar(func):
 if __name__ == '__main__':
 
     class Letter():
-        def __init__(self, letter):
-            self.letter = letter
+        def __init__(self, name):
+            self.letter = name
             self.children = []
+
 
     a = Letter('a')
     b = Letter('b')
@@ -162,17 +162,20 @@ if __name__ == '__main__':
     f.children = [e, g]
     e.children = [h]
     g.children = [g, h]
-
+    
     @dfs
     @invar
-    def print_(Node):
-        print(Node.letter)
+    def print_(Node, **kwargs):
+        kwargs['res'].append(Node.letter)
+        return True
 
     @bfs 
-    def set_(Node):
-        print(Node.letter)
-        Node.alt = Node.letter + 'alt'
-        return (True, Node.alt)
+    def set_(Node, **kwargs):
+        kwargs['res'].append(Node.letter)
+        return True
 
-    print(print_(a))
-    print(set_(a))
+    results = []
+    results2 = []
+    print_(a, res=results)
+    set_(a, res=results2) 
+    print(results)
