@@ -109,8 +109,8 @@ def bfs(func):
         # Try to extend queue with new neighbors checked against 
         # already visited.
         bfs_path(current, queue, visited)
-        # To continue 1) Queue must have waiting nodes naturally
-        #             2) Function must pass acknowledgement to cont.
+        # To continue 1) Queue must have waiting nodes understandably.
+        #             2) Function must return acknowledgement to continue.
         if curr_res == True and len(queue) > 0:
             return stepper(queue, visited, *args, **kwargs)
         else:
@@ -140,42 +140,8 @@ def invar(func):
             return results
     return wrapper
 
+def main():
+    pass
 
 if __name__ == '__main__':
-
-    class Letter():
-        def __init__(self, name):
-            self.letter = name
-            self.children = []
-
-
-    a = Letter('a')
-    b = Letter('b')
-    c = Letter('c')
-    d = Letter('d')
-    e = Letter('e')
-    f = Letter('f')
-    g = Letter('g')
-    h = Letter('h')
-    a.children = [b, c, f]
-    c.children = [d, e]
-    f.children = [e, g]
-    e.children = [h]
-    g.children = [g, h]
-    
-    @dfs
-    @invar
-    def print_(Node, **kwargs):
-        kwargs['res'].append(Node.letter)
-        return True
-
-    @bfs 
-    def set_(Node, **kwargs):
-        kwargs['res'].append(Node.letter)
-        return True
-
-    results = []
-    results2 = []
-    print_(a, res=results)
-    set_(a, res=results2) 
-    print(results)
+    pass
