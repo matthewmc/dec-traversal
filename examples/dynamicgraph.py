@@ -13,6 +13,7 @@ c.children = [d, e]
 f.children = [e, g]
 e.children = [h]
 g.children = [g, h]
+graph = [a, b, c, d, e, f, g, h]
 
 @dfs 
 def travel(Node):
